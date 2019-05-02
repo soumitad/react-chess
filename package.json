@@ -1,0 +1,31 @@
+{
+  "name": "react-chess",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bootstrap": "^4.3.1",
+    "dotenv-webpack": "^1.7.0",
+    "firebase": "^5.10.0",
+    "history": "^4.6.1",
+    "material-ui": "^0.20.2",
+    "react": "^15.4.2",
+    "react-bootstrap": "^1.0.0-beta.8",
+    "react-dom": "^15.4.2",
+    "react-router-dom": "^4.0.0",
+    "react-tap-event-plugin": "^3.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^3.18.0",
+    "eslint-plugin-react": "^6.10.3",
+    "react-scripts": "0.9.5",
+    "s3": "^4.4.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "deploy": "npm run build && node deploy.js"
+  }
+}
