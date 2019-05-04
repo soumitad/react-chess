@@ -1,7 +1,9 @@
-/* eslint-disable no-restricted-globals */
 import React, { Component } from 'react';
 import Utils from './utils';
 import chessLogo from './chess_logo.png';
+import './Register.css';
+import Card from "react-bootstrap/Card";
+
 const { firebase } = window;
 
 class Home extends Component {
@@ -21,6 +23,11 @@ class Home extends Component {
 
     handleChange(e) {
         this.setState({ [e.target.name]: e.target.value });
+    }
+
+    componentDidMount() {
+        const loggedInUser = localStorage.getItem('userID');
+        this.setState({p1_email: loggedInUser});
     }
 
     clickCreateGame = () => {
@@ -81,13 +88,13 @@ class Home extends Component {
      };
 
     render() {
-        console.log(localStorage.getItem('userID'));
         let textBox;
         let disclaimer;
         let button;
         if (this.state.createGame) {
             disclaimer = <div className="row">
                 <div className="col-md-12">
+                    <br />
                     Please enter Email address for player 2
                 </div>
             </div>;
@@ -99,25 +106,38 @@ class Home extends Component {
             textBox = null;
         }
         return (
-            <div className='row' style={{margin: 10}}>
-                <div className="col-md-3">
-                    <img src={chessLogo} style={{width: 400, height: 320}} alt="Chess-Logo" />
+            <div className="container">
+                <div className="row">
+                    <div className="col-md-12">
+                        <h2> Welcome {this.state.p1_email}. Please select an option below to continue </h2>
+                    </div>
                 </div>
-                <div className='col-md-4'>
+                <Card>
+                    <Card.Body>
 
-                        <h3>&nbsp;</h3>
-                        <button onClick={this.clickCreateGame}>Create a New Game</button>
-                    {disclaimer}
-                    {textBox}
-                    {button}
-                </div>
-                <div className='col-md-1'>
-                    &nbsp;
-                </div>
-                <div className="col-md-4">
-                    <h3>&nbsp;</h3>
-                    <button onClick={this.visitGameRoom}>Game Room</button>
-                </div>
+                        <div className='row' style={{margin: 10}}>
+                            <div className="col-md-5">
+                                <img src={chessLogo} style={{width: 400, height: 320}} alt="Chess-Logo" />
+                            </div>
+                            <div className='col-md-4'>
+
+                                <h3>&nbsp;</h3>
+                                <button onClick={this.clickCreateGame}>Create a New Game</button>
+                                <br/>
+                                {disclaimer}
+                                {textBox}
+                                {button}
+                            </div>
+                            <div className='col-md-1'>
+                                &nbsp;
+                            </div>
+                            <div className="col-md-2">
+                                <h3>&nbsp;</h3>
+                                <button onClick={this.visitGameRoom}>Game Room</button>
+                            </div>
+                        </div>
+                    </Card.Body>
+                </Card>
             </div>
         );
     }

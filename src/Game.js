@@ -1,14 +1,13 @@
 import React from 'react';
 
-const { firebase, Chess, ChessBoard } = window;
+const { firebase, Chess, ChessBoard, metro_board_theme, symbol_piece_theme, wikipedia_board_theme, $ } = window;
 
 const INITIAL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
 class Game extends React.Component {
-
   constructor(props) {
     super(props);
-   this.state = { token: this.props.token };
+   this.state = { token: this.props.token, squares: [] };
     this.engine = new Chess();
   }
 
@@ -66,11 +65,62 @@ class Game extends React.Component {
     const playerNum = figurePlayer(token, game);
     const config = {
       draggable: true,
-      pieceTheme: "https://s3-us-west-2.amazonaws.com/chessimg/{piece}.png",
+      pieceTheme: symbol_piece_theme,
       onDragStart: onDragStart,
       onDrop: onDrop,
-      onSnapEnd: onSnapEnd
+      onSnapEnd: onSnapEnd,
+      boardTheme: metro_board_theme,
+      onMouseoutSquare: onMouseoutSquare,
+      onMouseoverSquare: onMouseoverSquare,
     };
+
+    function onMouseoutSquare(square, piece) {
+      removeGreySquares();
+    }
+
+    function removeGreySquares() {
+      const arr = JSON.parse(localStorage.getItem('squares'));
+      const arrString = Array.from(arr);
+      for(let i=0; i<arrString.length; i++) {
+        let squareEl = $('#game-board .square-' + arrString[i]);
+        let background = '#EFEFEF';
+        if (squareEl.hasClass('black-3c85d') === true) {
+          background = '#FFFFFF';
+        }
+        squareEl.css('background', background);
+      }
+      /*$('#game-board .square-55d63').css('background', '');*/
+    }
+
+    function greySquare (square) {
+      let squareEl = $('#game-board .square-' + square);
+      let background = '#a9a9a9';
+      if (squareEl.hasClass('black-3c85d') === true) {
+        background = '#696969';
+      }
+      squareEl.css('background', background);
+    }
+
+    function onMouseoverSquare(square, piece) {
+     let squareArray = [];
+      // get list of possible moves for this square
+      const moves = engine.moves({
+        square: square,
+        verbose: true
+      });
+      // exit if there are no moves available for this square
+      if (moves.length === 0) return;
+      // highlight the square they moused over
+      squareArray.push(square);
+      greySquare(square);
+
+      // highlight the possible squares for this piece
+      for (var i = 0; i < moves.length; i++) {
+        squareArray.push(moves[i].to);
+        greySquare(moves[i].to);
+      }
+      localStorage.setItem('squares',JSON.stringify(squareArray));
+    }
 
     const board = ChessBoard('game-board', config);
     if (playerNum === 2) {
@@ -133,6 +183,15 @@ function games(id) {
   return firebase
     .database()
     .ref(`/games/${id}`);
+}
+
+function domain() {
+  const { hostname, port } = window.location;
+  if (port) {
+    return `http://${hostname}:${port}`;
+  } else {
+    return `http://${hostname}`;
+  }
 }
 
 function pushMove(moves, move) {

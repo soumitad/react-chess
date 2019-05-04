@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 const { firebase } = window;
 class GameRoom extends Component {
 
-    constructor({ match: { params: { email } } }) {
-        super();
+    constructor(props) {
+        super(props);
         this.fetchGames = this.fetchGames.bind(this);
         this.play = this.play.bind(this);
         this.state = {
-            userName: email,
+            userName: this.props.email,
             stateExistingGame: []
         };
-        this.existingGames = [];
+        this.existingGames = [{}];
     }
 
     componentDidMount() {
@@ -20,29 +20,20 @@ class GameRoom extends Component {
         });
     }
 
-    componentWillMount() {
-
-    }
-
     fetchGames() {
         const db = firebase.database().ref("/player");
         ["p1_email"].forEach((name) => {
             const ref = db.orderByChild(name).equalTo(this.state.userName);
             ref.on('value', (ref) => {
-                console.log(ref.val());
                 const key = Object.keys(ref.val());
-                const value = Object.values(ref.val());
-                console.log(key[0] + ' --Blah--Blah--Blah-- ' + value[0].p1_email);
-                console.log(key[1]);
-                console.log(value);
-                value.map((val) => {
-                    this.existingGames.push(val);
-                    this.setState({
-                        stateExistingGame: [...this.state.stateExistingGame, val]
-                    })
-                });
-
-                /*const [id, game] = parse(ref.val());
+                    const value = Object.values(ref.val());
+                    value.map((val) => {
+                        this.existingGames.push(val);
+                        this.setState({
+                            stateExistingGame: [...this.state.stateExistingGame, val]
+                        })
+                    });
+                    /*const [id, game] = parse(ref.val());
                 if (!id) return;*/
             });
         });
@@ -53,12 +44,13 @@ class GameRoom extends Component {
   }
 
     render() {
+
         return (
             <ul>
-                    {this.existingGames.map(function (value, index) {
+                {this.existingGames.map(function (value, index) {
                     return <li key={index}>Against player {value.p2_email} <a target="_blank" href={domain() + "/#/home/" + value.token}>Click to Play</a></li>;
                 })}
-                </ul>
+            </ul>
         )
     }
 
