@@ -31,11 +31,11 @@ class Game extends React.Component {
   componentDidMount() {
     listenForUpdates(this.state.token, (id, game) => {
       this._updateBoard(id, game);
-      this._updateInfo(game);
+      this._updateInfo(game, id);
     });
   }
 
-  _updateInfo(game) {
+  _updateInfo(game, id) {
     const engine = this.engine;
     const playerNum = figurePlayer(this.state.token, game);
     this.setState({

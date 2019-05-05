@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { HashRouter, Redirect, Route } from 'react-router-dom';
+import jwt_decode from 'jwt-decode';
 
 import './App.css';
 import Login from './Login';
@@ -35,7 +36,17 @@ export default class App extends Component {
     }
 
     isAuthenticated ()  {
-        return this.state.authenticated;
+        let user = JSON.parse(localStorage.getItem('user'));
+        const accessToken = user.user.stsTokenManager.accessToken;
+        const jwtToken = accessToken.split('.');
+        let jwtObject = atob(jwtToken[1]);
+        jwtObject = JSON.parse(jwtObject);
+        let dateNow = new Date();
+        console.log(jwtObject.exp + ' ' +dateNow.getTime() );
+        if (jwtObject.exp * 1000 < dateNow.getTime()) {
+            return false;
+        }
+        return true;
     }
 
     componentDidMount() {
@@ -51,7 +62,7 @@ export default class App extends Component {
                       <div className="container">
                           <Route exact path="/" component={Login} />
                           <Route exact path="/signUp" component={Register} />
-                          <Route exact path="/home" render={() => ( this.state.authenticated ? <Home /> : <Login />)} />
+                          <Route exact path="/home" render={() => ( this.isAuthenticated() ? <Home /> : <Login />)} />
                           <Route exact path="/home/:token" render={(props) => ( this.isAuthenticated() ? <Game token={props.match.params.token}/> : <Login />)}/>
                           <Route exact path="/room/:email" render={(props) => ( this.isAuthenticated() ? <GameRoom email={props.match.params.email}/> : <Login />)} />
 

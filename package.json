@@ -8,6 +8,8 @@
     "firebase": "^5.10.0",
     "history": "^4.9.0",
     "jquery": "^3.4.1",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^2.2.0",
     "mdbootstrap": "^4.8.0",
     "mdbreact": "^4.13.0",
     "password-validator": "^4.1.1",

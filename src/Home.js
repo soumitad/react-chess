@@ -3,6 +3,7 @@ import Utils from './utils';
 import chessLogo from './chess_logo.png';
 import './Register.css';
 import Card from "react-bootstrap/Card";
+import GameStatistics from "./GameStatistics";
 
 const { firebase } = window;
 
@@ -12,12 +13,14 @@ class Home extends Component {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.updatePlayerRecord = this.updatePlayerRecord.bind(this);
+        this.getLeaderBoard = this.getLeaderBoard.bind(this);
         this.state = {
             createNewGame: false,
             activeTab: props.activeTab || 1,
             viewGameRoom: false,
             p2_email: '',
-            p1_email: ''
+            p1_email: '',
+            leaderBoard: false
         };
     }
 
@@ -43,9 +46,15 @@ class Home extends Component {
     };
 
      createGame = () => {
+         let user = JSON.parse(localStorage.getItem('user'));
+
         const newGame = {
             p1_token: Utils.token(),
-            p2_token: Utils.token()
+            p2_token: Utils.token(),
+            p1_email: this.state.p1_email,
+            p2_email: this.state.p2_email,
+            status: 'In Progress',
+            winner: ''
         };
         /*,
         * Step 1: Assign logged in user email as Player 1 and put it as p1_userID in newGame const
@@ -87,6 +96,14 @@ class Home extends Component {
              });
      };
 
+      createGameStats= (user, p1_email, p2_email) => {
+
+      };
+
+    getLeaderBoard() {
+        this.setState({leaderBoard: true});
+    }
+
     render() {
         let textBox;
         let disclaimer;
@@ -104,6 +121,10 @@ class Home extends Component {
             button = <div className="col-md-6"><button onClick={this.createGame}>Go</button> </div>
         } else {
             textBox = null;
+        }
+        let gameStat;
+        if (this.state.leaderBoard) {
+            gameStat = <GameStatistics />
         }
         return (
             <div className="container">
@@ -138,6 +159,20 @@ class Home extends Component {
                         </div>
                     </Card.Body>
                 </Card>
+                <br />
+                <div className="row">
+                    <div className="col-md-6">
+                        <h2> Want to see how others are faring? </h2>
+                    </div>
+                    <div className="col-md-6">
+                        <button onClick={this.getLeaderBoard}>Game Statistics</button>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-12">
+                    {gameStat}
+                    </div>
+                </div>
             </div>
         );
     }
