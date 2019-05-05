@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Table from "react-bootstrap/Table";
 const { firebase } = window;
 class GameRoom extends Component {
 
@@ -10,10 +11,12 @@ class GameRoom extends Component {
             userName: this.props.email,
             stateExistingGame: []
         };
-        this.existingGames = [{}];
+        this.existingGames = [];
     }
 
     componentDidMount() {
+        let windowLoc = window.location.hash;
+        console.log(windowLoc);
         this.fetchGames();
         this.setState({
             stateExistingGame: this.existingGames
@@ -43,14 +46,40 @@ class GameRoom extends Component {
   // console.log(e.target.name);
   }
 
+    renderTableData() {
+        return this.existingGames.map((player, index) => {
+            const { p1_email, p2_email, token } = player;
+            return (
+                <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{p2_email}</td>
+                    <td><a target="_blank" href={domain() + "/#/home/" + token}>Click to Play</a></td>
+                </tr>
+            )
+        })
+    }
+
     render() {
 
         return (
-            <ul>
-                {this.existingGames.map(function (value, index) {
-                    return <li key={index}>Against player {value.p2_email} <a target="_blank" href={domain() + "/#/home/" + value.token}>Click to Play</a></li>;
-                })}
-            </ul>
+            <div>
+                <b>My Ongoing games:</b>
+                <Table responsive>
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Opponent Player</th>
+                        <th>Game Link</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {
+                        this.renderTableData()
+                    }
+                    </tbody>
+                </Table>
+            </div>
+
         )
     }
 

@@ -30,6 +30,8 @@ class Home extends Component {
 
     componentDidMount() {
         const loggedInUser = localStorage.getItem('userID');
+        const hashLoc = window.location.hash;
+        console.log(hashLoc);
         this.setState({p1_email: loggedInUser});
     }
 
@@ -128,6 +130,12 @@ class Home extends Component {
         }
         return (
             <div className="container">
+                <div className="row">
+                    <div className="col-md-11">
+                    </div>
+                    <div className="col-md-1">
+                    </div>
+                </div>
                 <div className="row">
                     <div className="col-md-12">
                         <h2> Welcome {this.state.p1_email}. Please select an option below to continue </h2>

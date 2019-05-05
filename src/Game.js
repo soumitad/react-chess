@@ -7,7 +7,7 @@ const INITIAL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 class Game extends React.Component {
   constructor(props) {
     super(props);
-   this.state = { token: this.props.token, squares: [] };
+   this.state = { token: this.props.token, squares: [] , playerNum: 0, isMyTurn: true};
     this.engine = new Chess();
   }
 
@@ -30,6 +30,7 @@ class Game extends React.Component {
 
   componentDidMount() {
     listenForUpdates(this.state.token, (id, game) => {
+      console.log('Game '+JSON.stringify(game));
       this._updateBoard(id, game);
       this._updateInfo(game, id);
     });
@@ -42,8 +43,9 @@ class Game extends React.Component {
       moves: game.moves ? game.moves.split(",") : [],
       p1_token: game.p1_token,
       p2_token: game.p2_token,
-      turnText: turnText(playerNum, isMyTurn(playerNum, engine.turn())),
-      statusText: statusText(engine.turn(), engine.in_checkmate(), engine.in_draw(), engine.in_check())
+      turnText: turnText(playerNum, isMyTurn(playerNum, engine.turn()), game),
+      statusText: statusText(engine.turn(), engine.in_checkmate(), engine.in_draw(), engine.in_check(), id, game, playerNum),
+      playerNum: playerNum
     });
   }
 
@@ -221,12 +223,18 @@ function figurePlayer(token, { p1_token, p2_token }) {
   }
 }
 
-function turnText(playerNum, isMyTurn) {
+function turnText(playerNum, isMyTurn, {p1_email, p2_email}) {
   if (playerNum > 0) {
     if (isMyTurn) {
       return "Your Turn";
     } else {
-      return "Waiting for opponent's move...";
+      let opponent;
+      if (playerNum === 1) {
+        opponent = p2_email;
+      } else {
+        opponent = p1_email;
+      }
+      return "Waiting for "+opponent+" 's move...";
     }
   } else {
     return "View Only";
@@ -234,14 +242,24 @@ function turnText(playerNum, isMyTurn) {
 
 }
 
-function statusText(turn, in_mate, in_draw, in_check) {
+function statusText(turn, in_mate, in_draw, in_check, id , {p1_token, p2_token, p1_email, p2_email}, playerNum) {
   const moveColor = turn === 'b' ? "Black" : "White";
-  if (in_mate)
+  console.log('PlayerNum '+playerNum);
+  let winnerEmail;
+  if (in_mate){
+    //games(id).update();
+    if (playerNum === 2 && turn === 'w'){
+      winnerEmail = p2_email;
+    } else  {
+      winnerEmail = p1_email;
+    }
+    const game = {status: 'Complete', winner: winnerEmail};
+    games(id).update(game);
     return `Game Over, ${moveColor} is in checkmate`;
-  else if (in_draw)
+  } else if (in_draw) {
     return 'Game over, drawn position';
-  else if (in_check)
+  } else if (in_check) {
     return `${moveColor} is in check!`;
-  else
+  } else
     return "";
 }

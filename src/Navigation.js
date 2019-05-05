@@ -1,5 +1,7 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
+import app from './base';
+const { firebase } = window;
 const NavItem = props => {
     const pageURI = window.location.pathname+window.location.search;
     const liClassName = (props.path === pageURI) ? "nav-item active" : "nav-item";
@@ -14,39 +16,32 @@ const NavItem = props => {
     );
 };
 
-class NavDropdown extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isToggleOn: false
-        };
-    }
-    showDropdown(e) {
-        e.preventDefault();
-        this.setState(prevState => ({
-            isToggleOn: !prevState.isToggleOn
-        }));
-    }
-    render() {
-        const classDropdownMenu = 'dropdown-menu' + (this.state.isToggleOn ? ' show' : '');
-        return (
-            <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="/" id="navbarDropdown" role="button" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false"
-                   onClick={(e) => {this.showDropdown(e)}}>
-                    {this.props.name}
-                </a>
-                <div className={classDropdownMenu} aria-labelledby="navbarDropdown">
-                    {this.props.children}
-                </div>
-            </li>
-        )
-    }
-}
-
 
 class Navigation extends React.Component {
+    constructor(props) {
+        super(props);
+        this.logOut = this.logOut.bind(this);
+    }
+
+    logOut() {
+        localStorage.clear();
+        console.log('Here');
+        firebase.auth().signOut().then(function() {
+            console.log('User signed out');
+        }).catch(function(error) {
+            console.log(error);
+        });
+        window.location.hash = "/";
+        location.reload();
+    }
+
     render() {
+        let button;
+        let windowLoc = window.location.hash;
+        if (windowLoc === '#/home' || windowLoc.indexOf('#/room/') !== -1) {
+
+                button = <button className="btn btn-outline-success my-2 my-sm-0" onClick="this.logOut()">Log Out</button>
+        }
         return (
             <nav className="navbar navbar-expand-lg navbar-light bg-dark">
                 <a className="navbar-brand" href="/"><p style={{color: 'white'}}>ChessBoard</p></a>
@@ -58,9 +53,9 @@ class Navigation extends React.Component {
                     <ul className="navbar-nav mr-auto">
 
                     </ul>
-                    <form className="form-inline my-2 my-lg-0">
-                        <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
-                    </form>
+                    {
+                        button
+                    }
                 </div>
             </nav>
         )
