@@ -32,8 +32,8 @@ class Login extends Component {
     login(e) {
         e.preventDefault();
         app.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((u)=>{
-            localStorage.setItem('userID', u.user.email);
-            localStorage.setItem('user',JSON.stringify(u));
+            sessionStorage.setItem('userID', u.user.email);
+            sessionStorage.setItem('user',JSON.stringify(u));
             window.location.hash = `#/home`;
             location.reload();
         }).catch((error) => {

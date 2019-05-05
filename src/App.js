@@ -36,13 +36,15 @@ export default class App extends Component {
     }
 
     isAuthenticated ()  {
-        let user = JSON.parse(localStorage.getItem('user'));
+        let user = JSON.parse(sessionStorage.getItem('user'));
+        if (user === 'undefined') {
+            return false;
+        }
         const accessToken = user.user.stsTokenManager.accessToken;
         const jwtToken = accessToken.split('.');
         let jwtObject = atob(jwtToken[1]);
         jwtObject = JSON.parse(jwtObject);
         let dateNow = new Date();
-        console.log(jwtObject.exp + ' ' +dateNow.getTime() );
         if (jwtObject.exp * 1000 < dateNow.getTime()) {
             return false;
         }

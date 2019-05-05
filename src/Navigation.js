@@ -25,7 +25,6 @@ class Navigation extends React.Component {
 
     logOut() {
         localStorage.clear();
-        console.log('Here');
         firebase.auth().signOut().then(function() {
             console.log('User signed out');
         }).catch(function(error) {
@@ -40,7 +39,7 @@ class Navigation extends React.Component {
         let windowLoc = window.location.hash;
         if (windowLoc === '#/home' || windowLoc.indexOf('#/room/') !== -1) {
 
-                button = <button className="btn btn-outline-success my-2 my-sm-0" onClick="this.logOut()">Log Out</button>
+                button = <button className="btn btn-outline-success my-2 my-sm-0" type="submit" onClick={this.logOut}>Log Out</button>
         }
         return (
             <nav className="navbar navbar-expand-lg navbar-light bg-dark">
